@@ -1,0 +1,6 @@
+{
+    "semi": false,
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+}
