@@ -1,5 +1,5 @@
 
-export type Guarrdian = {
+export type Guardian = {
     fatherName: string
     fatherOccupation: string
     fatherContactNo: string
@@ -30,7 +30,7 @@ export type Student = {
     email: string;
     presentAddress: string;
     permanentAddress: string;
-    guardian: Guarrdian
+    guardian: Guardian
     avatar?: string;
     localGuardian: LocalGuradian;
     profileImg?: string;
