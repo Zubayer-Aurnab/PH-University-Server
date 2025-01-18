@@ -7,10 +7,9 @@ app.use(express.json())
 app.use(cors())
 app.use('/api/v1/students', StudentRoutes) //application  routes
 
-
 app.get('/', (req: Request, res: Response) => {
-    const a = 10
-    res.send(a)
+  const a = 10
+  res.send(a)
 })
 
 export default app
