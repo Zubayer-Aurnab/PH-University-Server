@@ -1,30 +1,15 @@
 import mongoose, { Schema } from 'mongoose';
-import { Guardian, LocalGuradian, Student, UserName } from './student.interface';
+import { TGuardian, TLocalGuradian, TStudent, StudentMethod, StudentModel, TUserName } from './student.interface';
 import validator from 'validator';
-const userNameScema = new Schema<UserName>({
-    firstName: {
-        type: String, required: [true, "First name is required"], trim: true, validate: {
-            validator: function (value) {
-                const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
-                return firstNameStr === value
-            },
-            message: "Value is not in capitalize formate"
-        }
-    },
+
+
+const userNameScema = new Schema<TUserName>({
+    firstName: { type: String, required: [true, "First name is required"], trim: true, },
     middleName: { type: String, required: [true, "Middle name is required"], trim: true },
-    lastName: {
-        type: String, required: [true, "Last name is required"],
-        trim: true,
-        validate: {
-            validator: (value: string) => {
-                return validator.isAlpha(value);
-            },
-            message: "{VALUE} is not a valid last name. Only alphabetic characters are allowed."
-        }
-    }
+    lastName: { type: String, required: [true, "Last name is required"], trim: true, }
 });
 
-const guardianScema = new Schema<Guardian>({
+const guardianScema = new Schema<TGuardian>({
     fatherName: { type: String, required: [true, "Father's name is required"], trim: true },
     fatherContactNo: { type: String, required: [true, "Father's contact number is required"], trim: true },
     fatherOccupation: { type: String, required: [true, "Father's occupation is required"] },
@@ -33,20 +18,20 @@ const guardianScema = new Schema<Guardian>({
     motherOccupation: { type: String, required: [true, "Mother's occupation is required"] }
 });
 
-const localGuardianScema = new Schema<LocalGuradian>({
+const localGuardianScema = new Schema<TLocalGuradian>({
     name: { type: String, required: [true, "Local guardian's name is required"] },
     occupation: { type: String, required: [true, "Local guardian's occupation is required"] },
     contactNo: { type: String, required: [true, "Local guardian's contact number is required"] },
     address: { type: String, required: [true, "Local guardian's address is required"] }
 });
 
-const studentSchema = new Schema<Student>({
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
     id: { type: String, required: [true, "Student ID is required"], unique: true },
     name: { type: userNameScema, required: [true, "Student's name is required"] },
     gender: {
         type: String,
         enum: {
-            values: ["female", "male"],
+            values: ["female", "male", "other"],
             message: 'Gender must be either "male" or "female".'
         },
         required: [true, "Gender is required"]
@@ -87,4 +72,9 @@ const studentSchema = new Schema<Student>({
     }
 });
 
-export const StudentModel = mongoose.model<Student>("Student", studentSchema);
+studentSchema.methods.isUserExists = async function (id: string) {
+    const existingUser = await Student.findOne({ id })
+    return existingUser
+}
+
+export const Student = mongoose.model<TStudent, StudentModel>("Student", studentSchema);
