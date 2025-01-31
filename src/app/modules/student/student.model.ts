@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
-import { TGuardian, TLocalGuradian, TStudent, StudentMethod, StudentModel, TUserName } from './student.interface';
+import { TGuardian, TLocalGuradian, TStudent, StudentModel, TUserName } from './student.interface';
 import validator from 'validator';
-
+import bcrypt from 'bcrypt';
 
 const userNameScema = new Schema<TUserName>({
     firstName: { type: String, required: [true, "First name is required"], trim: true, },
@@ -25,8 +25,9 @@ const localGuardianScema = new Schema<TLocalGuradian>({
     address: { type: String, required: [true, "Local guardian's address is required"] }
 });
 
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
+const studentSchema = new Schema<TStudent, StudentModel>({
     id: { type: String, required: [true, "Student ID is required"], unique: true },
+    password: { type: String, required: [true, "Password is required"], unique: true, maxlength: [20, 'can not be more then 20 charecters'], minlength: [8, "must be in 8 charecters"] },
     name: { type: userNameScema, required: [true, "Student's name is required"] },
     gender: {
         type: String,
@@ -72,9 +73,31 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
     }
 });
 
-studentSchema.methods.isUserExists = async function (id: string) {
+
+//pre save middleware / hook
+studentSchema.pre('save', async function (next) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const user = this
+    user.password = await bcrypt.hash(user.password, 12);
+    next()
+})
+//post save middleware / hook
+studentSchema.post('save', function () {
+    console.log(this, "this is post hook middleware-----")
+})
+
+//creating a custom static method
+studentSchema.statics.isUserExists = async function (id: string) {
     const existingUser = await Student.findOne({ id })
     return existingUser
 }
+
+
+
+//creating a custome instance method
+// studentSchema.methods.isUserExists = async function (id: string) {
+//     const existingUser = await Student.findOne({ id })
+//     return existingUser
+// }
 
 export const Student = mongoose.model<TStudent, StudentModel>("Student", studentSchema);

@@ -5,12 +5,9 @@ import studentValidationSchema from './student.validation'
 const createStudent = async (req: Request, res: Response) => {
     try {
         const { student: studentData } = req.body;
-
         // Validate with Zod to ensure it matches the schema
         const zodParsedData = studentValidationSchema.parse(studentData);
-
         const result = await StudentServices.createStudentIntoDB(zodParsedData);
-
         res.status(200).json({
             success: true,
             message: "Student is created successfully",
@@ -24,7 +21,6 @@ const createStudent = async (req: Request, res: Response) => {
         });
     }
 };
-
 const getAllStudent = async (req: Request, res: Response) => {
     try {
         const result = await StudentServices.getAllStudentFromDB();
@@ -39,7 +35,6 @@ const getAllStudent = async (req: Request, res: Response) => {
         console.log(err)
     }
 }
-
 const getSingleStudent = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
@@ -55,7 +50,6 @@ const getSingleStudent = async (req: Request, res: Response) => {
         console.log(err)
     }
 }
-
 export const StudentControllers = {
     createStudent,
     getAllStudent,
