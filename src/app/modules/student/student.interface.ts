@@ -36,7 +36,8 @@ export type TStudent = {
     avatar?: string;
     localGuardian: TLocalGuradian;
     profileImg?: string;
-    isActive: "active" | "block"
+    isActive: "active" | "block",
+    isDeleted: boolean
 }
 
 export interface StudentModel extends Model<TStudent> {

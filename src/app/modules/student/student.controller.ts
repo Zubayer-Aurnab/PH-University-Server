@@ -32,7 +32,11 @@ const getAllStudent = async (req: Request, res: Response) => {
         })
     }
     catch (err) {
-        console.log(err)
+        res.status(400).json({
+            success: false,
+            message: err instanceof Error ? err.message : "Something went wrong",
+            error: err,
+        });
     }
 }
 const getSingleStudent = async (req: Request, res: Response) => {
@@ -47,11 +51,35 @@ const getSingleStudent = async (req: Request, res: Response) => {
         })
     }
     catch (err) {
-        console.log(err)
+        res.status(400).json({
+            success: false,
+            message: err instanceof Error ? err.message : "Something went wrong",
+            error: err,
+        });
     }
 }
+const deleteStudent = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const result = await StudentServices.deleteStudentFromDB(id);
+        res.status(200).json({
+            success: true,
+            message: "Student Deleted Successfully",
+            data: result
+        })
+    }
+    catch (err) {
+        res.status(400).json({
+            success: false,
+            message: err instanceof Error ? err.message : "Something went wrong",
+            error: err,
+        });
+    }
+}
+
 export const StudentControllers = {
     createStudent,
     getAllStudent,
-    getSingleStudent
+    getSingleStudent,
+    deleteStudent
 }

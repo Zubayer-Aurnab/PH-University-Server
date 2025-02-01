@@ -3,6 +3,7 @@ import { TGuardian, TLocalGuradian, TStudent, StudentModel, TUserName } from './
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 
+
 const userNameScema = new Schema<TUserName>({
     firstName: { type: String, required: [true, "First name is required"], trim: true, },
     middleName: { type: String, required: [true, "Middle name is required"], trim: true },
@@ -27,7 +28,7 @@ const localGuardianScema = new Schema<TLocalGuradian>({
 
 const studentSchema = new Schema<TStudent, StudentModel>({
     id: { type: String, required: [true, "Student ID is required"], unique: true },
-    password: { type: String, required: [true, "Password is required"], unique: true, maxlength: [20, 'can not be more then 20 charecters'], minlength: [8, "must be in 8 charecters"] },
+    password: { type: String, required: [true, "Password is required"], maxlength: [20, 'can not be more then 20 charecters'], minlength: [8, "must be in 8 charecters"] },
     name: { type: userNameScema, required: [true, "Student's name is required"] },
     gender: {
         type: String,
@@ -70,6 +71,11 @@ const studentSchema = new Schema<TStudent, StudentModel>({
             message: 'The status must be either "active" or "block".'
         },
         default: "active"
+    },
+    isDeleted: { type: Boolean, default: false }
+}, {
+    toJSON: {
+        virtuals: true
     }
 });
 
@@ -82,8 +88,27 @@ studentSchema.pre('save', async function (next) {
     next()
 })
 //post save middleware / hook
-studentSchema.post('save', function () {
-    console.log(this, "this is post hook middleware-----")
+studentSchema.post('save', function (doc, next) {
+    doc.password = ""
+    next()
+})
+//Query Middleware 
+studentSchema.pre('find', function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next()
+})
+
+studentSchema.pre('findOne', function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next()
+})
+studentSchema.pre('aggregate', function (next) {
+    this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
+    next()
+})
+
+studentSchema.virtual('fullName').get(function () {
+    return this.name.firstName + " " + this.name.middleName + " " + this.name.lastName
 })
 
 //creating a custom static method
@@ -91,7 +116,6 @@ studentSchema.statics.isUserExists = async function (id: string) {
     const existingUser = await Student.findOne({ id })
     return existingUser
 }
-
 
 
 //creating a custome instance method

@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 const userNameSchema = z.object({
@@ -44,6 +45,7 @@ export const studentValidationSchema = z.object({
     localGuardian: localGuardianSchema,
     profileImg: z.string(),
     isActive: z.enum(['active', 'block']).default('active'),
+    isDeleted: z.boolean()
 });
 
 export default studentValidationSchema;
