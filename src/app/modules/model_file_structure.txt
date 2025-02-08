@@ -1,0 +1,18 @@
+
+project-root/
+│
+├── src/
+│   ├── app/
+│   │   ├── modules/
+│   │   │   ├── example/
+│   │   │   │   ├── example.interface.ts
+│   │   │   │   ├── example.model.ts
+│   │   │   │   ├── example.validation.ts
+│   │   │   │   ├── example.route.ts
+│   │   │   │   ├── example.controller.ts
+│   │   │   │   ├── example.service.ts
+│   │   │   │   
+│   │   └── index.ts
+│   └── server.ts
+├── package.json
+└── tsconfig.json
