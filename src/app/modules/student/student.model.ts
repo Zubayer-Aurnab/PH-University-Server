@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { TGuardian, TLocalGuradian, TStudent, StudentModel, TUserName } from './student.interface';
 import validator from 'validator';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 
 
 const userNameScema = new Schema<TUserName>({
@@ -28,7 +28,8 @@ const localGuardianScema = new Schema<TLocalGuradian>({
 
 const studentSchema = new Schema<TStudent, StudentModel>({
     id: { type: String, required: [true, "Student ID is required"], unique: true },
-    password: { type: String, required: [true, "Password is required"], maxlength: [20, 'can not be more then 20 charecters'], minlength: [8, "must be in 8 charecters"] },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: [true, "User ID is required"], unique: true },
+    // password: { type: String, required: [true, "Password is required"], maxlength: [20, 'can not be more then 20 charecters'], minlength: [8, "must be in 8 charecters"] },
     name: { type: userNameScema, required: [true, "Student's name is required"] },
     gender: {
         type: String,
@@ -64,14 +65,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     guardian: { type: guardianScema, required: [true, "Guardian details are required"] },
     localGuardian: { type: localGuardianScema, required: [true, "Local guardian details are required"] },
     profileImg: { type: String },
-    isActive: {
-        type: String,
-        enum: {
-            values: ["active", "block"],
-            message: 'The status must be either "active" or "block".'
-        },
-        default: "active"
-    },
+
     isDeleted: { type: Boolean, default: false }
 }, {
     toJSON: {
@@ -81,17 +75,17 @@ const studentSchema = new Schema<TStudent, StudentModel>({
 
 
 //pre save middleware / hook
-studentSchema.pre('save', async function (next) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const user = this
-    user.password = await bcrypt.hash(user.password, 12);
-    next()
-})
-//post save middleware / hook
-studentSchema.post('save', function (doc, next) {
-    doc.password = ""
-    next()
-})
+// studentSchema.pre('save', async function (next) {
+//     // eslint-disable-next-line @typescript-eslint/no-this-alias
+//     const user = this
+//     user.password = await bcrypt.hash(user.password, 12);
+//     next()
+// })
+// //post save middleware / hook
+// studentSchema.post('save', function (doc, next) {
+//     doc.password = ""
+//     next()
+// })
 //Query Middleware 
 studentSchema.pre('find', function (next) {
     this.find({ isDeleted: { $ne: true } })
