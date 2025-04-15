@@ -1,9 +1,11 @@
 // import studentValidationSchema from "../student/student.validation";
-import { NextFunction, Request, Response } from "express";
-import { UserServices } from "./user.service";
-import sendResponse from "../../utils/sendResponse";
 import HttpStatus from "http-status";
-const createStudent = async (req: Request, res: Response, next: NextFunction) => {
+import sendResponse from "../../utils/sendResponse";
+import { UserServices } from "./user.service";
+import { RequestHandler } from "express";
+
+
+const createStudent: RequestHandler = async (req, res, next) => {
     try {
         const { password, student: studentData } = req.body;
         // const zodParsedData = studentValidationSchema.parse(studentData);
